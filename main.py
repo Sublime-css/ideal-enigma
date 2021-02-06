@@ -3,8 +3,6 @@ from os import path, system
 import requests
 import json
 
-#json_url + "blob/main/Spitfire_Proto.dds?raw=true"
-
 #location of skin JSON file
 json_url = 'https://sublime-css.github.io/ideal-enigma/'
 
@@ -47,7 +45,6 @@ def download(IL2_path, url, skin_path, name):
             if path.isdir(IL2_path + "data/graphics/skins/" + skin_path) != True:
                 os.mkdir(IL2_path + "data/graphics/skins/" + skin_path)
             open(IL2_path + "data/graphics/skins/" + skin_path + name, 'wb').write(skin.content)
-            print("Successfully synced skin " + name + " to " + skin_path)
     except FileNotFoundError:
         print("Error writing to the IL-2 directory while syncing skin " + name + " to " + skin_path + ". No changes have been made.")
         return
