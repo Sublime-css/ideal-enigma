@@ -50,14 +50,13 @@ def download(IL2_path, url, skin_path, name):
             print("Successfully synced skin " + name + " to " + skin_path)
     except FileNotFoundError:
         print("Error writing to the IL-2 directory while syncing skin " + name + " to " + skin_path + ". No changes have been made.")
-        system("Pause")
-        exit(3)
+        return
+        
     except Exception as e:
         print("Error while syncing skin " + name + " to " + skin_path)
         print(e)
-        system("Pause")
-        exit(4)
-
+        return
+    print("Successfully synced skin " + name + " to " + skin_path)
 
 download("C:/Users/lukaa/Documents/IL-2/", parse["1"]["host"], parse["1"]["localpath"], parse["1"]["filename"])
 download("C:/Users/lukaa/Documents/IL-2/", parse["2"]["host"], parse["2"]["localpath"], parse["2"]["filename"])
