@@ -5,7 +5,7 @@ import json
 url = 'https://sublime-css.github.io/ideal-enigma/'
 request = requests.get(url)
 parse=json.loads(request.content)
-print(parse["name"])
+print(parse["1"]["name"])
 
 #common game install locations
 directories = [ "C:/Program Files (x86)/Steam/steamapps/common/IL-2 Sturmovik Battle of Stalingrad/", 
