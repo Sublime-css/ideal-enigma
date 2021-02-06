@@ -1,14 +1,13 @@
+import os
 from os import path, system
 import requests
 import json
 
-url = 'https://sublime-css.github.io/ideal-enigma/'
-request = requests.get(url)
-parse=json.loads(request.content)
-print(parse["1"]["name"])
+#json_url + "blob/main/Spitfire_Proto.dds?raw=true"
 
-skin=requests.get(url + "blob/main/Spitfire_Proto.dds?raw=true")
-open('bob/Spitfire_Proto.dds', 'wb').write(skin.content)
+#location of skin JSON file
+json_url = 'https://sublime-css.github.io/ideal-enigma/'
+
 #common game install locations
 directories = [ "C:/Program Files (x86)/Steam/steamapps/common/IL-2 Sturmovik Battle of Stalingrad/", 
                 "C:/SteamLibrary/steamapps/common/IL-2 Sturmovik Battle of Stalingrad/", 
@@ -28,6 +27,37 @@ if count == 0:
     print(  "Couldn't find your IL-2 installation automatically. Try placing the path, for example " +
             "C:/Program Files (x86)/Steam/steamapps/common/IL-2 Sturmovik Battle of Stalingrad/, into \"directory.txt\"")
     system("Pause")
+    exit(1)
 
 if count > 1:
     print("Yikes! You appear to have multiple IL-2 installations.")
+    system("Pause")
+    exit(2)
+
+
+request = requests.get(json_url)
+parse=json.loads(request.content)
+print(parse["1"]["name"])
+
+#Downloading a skin:
+def download(IL2_path, url, skin_path, name):
+    try:
+        skin=requests.get(url)
+        if path.isdir(IL2_path) == True:
+            if path.isdir(IL2_path + "data/graphics/skins/" + skin_path) != True:
+                os.mkdir(IL2_path + "data/graphics/skins/" + skin_path)
+            open(IL2_path + "data/graphics/skins/" + skin_path + name, 'wb').write(skin.content)
+            print("Successfully synced skin " + name + " to " + skin_path)
+    except FileNotFoundError:
+        print("Error writing to the IL-2 directory while syncing skin " + name + " to " + skin_path + ". No changes have been made.")
+        system("Pause")
+        exit(3)
+    except Exception as e:
+        print("Error while syncing skin " + name + " to " + skin_path)
+        print(e)
+        system("Pause")
+        exit(4)
+
+
+download("C:/Users/lukaa/Documents/IL-2/", parse["1"]["host"], parse["1"]["localpath"], parse["1"]["filename"])
+download("C:/Users/lukaa/Documents/IL-2/", parse["2"]["host"], parse["2"]["localpath"], parse["2"]["filename"])
