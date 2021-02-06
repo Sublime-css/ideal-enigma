@@ -7,6 +7,8 @@ request = requests.get(url)
 parse=json.loads(request.content)
 print(parse["1"]["name"])
 
+skin=requests.get(url + "blob/main/Spitfire_Proto.dds?raw=true")
+open('bob/Spitfire_Proto.dds', 'wb').write(skin.content)
 #common game install locations
 directories = [ "C:/Program Files (x86)/Steam/steamapps/common/IL-2 Sturmovik Battle of Stalingrad/", 
                 "C:/SteamLibrary/steamapps/common/IL-2 Sturmovik Battle of Stalingrad/", 
