@@ -32,11 +32,6 @@ if count > 1:
     system("Pause")
     exit(2)
 
-
-request = requests.get(json_url)
-parse=json.loads(request.content)
-print(parse["1"]["name"])
-
 #Downloading a skin:
 def download(IL2_path, url, skin_path, name):
     try:
@@ -55,5 +50,17 @@ def download(IL2_path, url, skin_path, name):
         return
     print("Successfully synced skin " + name + " to " + skin_path)
 
-download("C:/Users/lukaa/Documents/IL-2/", parse["1"]["host"], parse["1"]["localpath"], parse["1"]["filename"])
-download("C:/Users/lukaa/Documents/IL-2/", parse["2"]["host"], parse["2"]["localpath"], parse["2"]["filename"])
+print("""ID   Name                                         Airframe                 Creator
+####################################################################################################""")
+
+request = requests.get(json_url)
+parse=json.loads(request.content)
+for i in range(1, 1+ len(parse)):
+    thestring = str(i) + " " * (5 - len(str(i)))
+    thestring += parse[str(i)]["name"] + " " * (45 - len(parse[str(i)]["name"])) 
+    thestring += parse[str(i)]["airframe"] + " " * (25 - len(parse[str(i)]["airframe"]))
+    thestring += parse[str(i)]["creator"] + " " * (25 - len(parse[str(i)]["creator"]))
+    print(thestring)
+
+#download("C:/Users/lukaa/Documents/IL-2/", parse["1"]["host"], parse["1"]["localpath"], parse["1"]["filename"])
+#download("C:/Users/lukaa/Documents/IL-2/", parse["2"]["host"], parse["2"]["localpath"], parse["2"]["filename"])
