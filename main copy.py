@@ -6,7 +6,7 @@ from fuzzywuzzy import fuzz
 
 #limit for similarity of fuzzy string matching
 #100 = only show perfect matches, 0 = show everything
-fuzzy_search_limit = 75
+fuzzy_search_limit = 50
 
 #location of skin JSON file
 json_url = 'https://sublime-css.github.io/ideal-enigma/'
@@ -47,6 +47,7 @@ def find_install():
 
 #Downloading a skin:
 def download(IL2_path, url, skin_path, name):
+    print("Downloading...")
     try:
         skin=requests.get(url)
         if path.isdir(IL2_path) == True:
@@ -72,32 +73,28 @@ def print_results(search):
             thestring += parse[str(i)]["name"] + " " * (45 - len(parse[str(i)]["name"])) 
             thestring += parse[str(i)]["airframe"] + " " * (25 - len(parse[str(i)]["airframe"]))
             thestring += parse[str(i)]["creator"] + " " * (25 - len(parse[str(i)]["creator"]))
+            thestring += "\n"
             print(thestring)
 
 find_install()
 
 #idk why its named bob ok?
 while True:
-    print_results("none")
-    bob = input("Skin to sync, for example '1' to sync the skin with ID 1. '0' or 'exit' to exit\n")
+    bob = input("Commands: 'Search', 'Filter' (by airframe), 'Historical'(toggle on and off). '0' or 'exit' to exit\nCommand: ")
     if (bob == "0" or bob.lower() == "exit"):
         exit()
     elif (bob.lower() == "search"):
         print("Search Mode")
         while True:
-            bob = input("Search term, for example 'FW190'. '0' or 'exit' to exit search mode and return to normal operation\n")
+            bob = input("Search term, for example 'FW190'. '0' or 'exit' to exit search mode and return to normal operation.\nSearch: ")
             if (bob == "0" or bob.lower() == "exit"):
                 break
             print_results(bob)
-            bob = input("Skin to sync, for example '1' to sync the skin with ID 1. '0' or 'exit' to exit\n")
-            if (bob == "0" or bob.lower() == "exit"):
-                break
-            try:
-                download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
-            except:
-                print("Error! input out of bounds")
-    else:    
-        try:
-            download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
-        except:
-            print("Error! input out of bounds")
+            while True:
+                bob = input("Skin to sync, for example '1' to sync the skin with ID 1. '0' or 'exit' to go back to search mode\n")
+                if (bob == "0" or bob.lower() == "exit"):
+                    break
+                try:
+                    download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
+                except:
+                    print("Error! input out of bounds")
