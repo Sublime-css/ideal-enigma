@@ -6,7 +6,10 @@ from fuzzywuzzy import fuzz
 
 #limit for similarity of fuzzy string matching
 #100 = only show perfect matches, 0 = show everything
-fuzzy_search_limit = 75
+fuzzy_search_limit = 50
+
+#should only historical skins show?
+historical_skins = False
 
 #location of skin JSON file
 json_url = 'https://sublime-css.github.io/ideal-enigma/'
@@ -47,6 +50,7 @@ def find_install():
 
 #Downloading a skin:
 def download(IL2_path, url, skin_path, name):
+    print("Downloading...")
     try:
         skin=requests.get(url)
         if path.isdir(IL2_path) == True:
@@ -63,41 +67,60 @@ def download(IL2_path, url, skin_path, name):
         return
     print("Successfully synced skin " + name + " to " + skin_path)
 
-def print_results(search):
+def print_results(search, airframe):
     print("""ID   Name                                         Airframe                 Creator
 ####################################################################################################""")
     for i in range(1, 1+ len(parse)):
-        if(search == "none" or fuzz.partial_ratio(search.lower(),parse[str(i)]["name"].lower()) > fuzzy_search_limit):
-            thestring = str(i) + " " * (5 - len(str(i)))
-            thestring += parse[str(i)]["name"] + " " * (45 - len(parse[str(i)]["name"])) 
-            thestring += parse[str(i)]["airframe"] + " " * (25 - len(parse[str(i)]["airframe"]))
-            thestring += parse[str(i)]["creator"] + " " * (25 - len(parse[str(i)]["creator"]))
-            print(thestring)
+        if(search == "none" or 
+        fuzz.partial_ratio(search.lower(),parse[str(i)]["name"].lower()) > fuzzy_search_limit or 
+        fuzz.partial_ratio(search.lower(),parse[str(i)]["airframe"].lower()) > fuzzy_search_limit or 
+        fuzz.partial_ratio(search.lower(),parse[str(i)]["creator"].lower()) > fuzzy_search_limit ):
+            if(historical_skins == False or parse[str(i)]["historical"] == "True"):
+                if(airframe == "none" or fuzz.partial_token_sort_ratio(airframe, parse[str(i)]["airframe"]) > fuzzy_search_limit):
+                    thestring = str(i) + " " * (5 - len(str(i)))
+                    thestring += parse[str(i)]["name"] + " " * (45 - len(parse[str(i)]["name"])) 
+                    thestring += parse[str(i)]["airframe"] + " " * (25 - len(parse[str(i)]["airframe"]))
+                    thestring += parse[str(i)]["creator"] + " " * (25 - len(parse[str(i)]["creator"]))
+                    thestring += "\n"
+                    print(thestring)
 
 find_install()
 
 #idk why its named bob ok?
 while True:
-    print_results("none")
-    bob = input("Skin to sync, for example '1' to sync the skin with ID 1. '0' or 'exit' to exit\n")
-    if (bob == "0" or bob.lower() == "exit"):
+    bob = input("Commands: 'Search' (skin or creator), 'Filter' (by airframe), 'Historical'(toggle on and off). 'exit' to quit\nCommand: ")
+    if (bob == "exit"):
         exit()
     elif (bob.lower() == "search"):
         print("Search Mode")
         while True:
-            bob = input("Search term, for example 'FW190'. '0' or 'exit' to exit search mode and return to normal operation\n")
-            if (bob == "0" or bob.lower() == "exit"):
+            bob = input("Search term, for example 'FW190'. Press enter to exit search mode and return to normal operation.\nSearch: ")
+            if (bob == ""):
                 break
-            print_results(bob)
-            bob = input("Skin to sync, for example '1' to sync the skin with ID 1. '0' or 'exit' to exit\n")
-            if (bob == "0" or bob.lower() == "exit"):
+            print_results(bob, "none")
+            while True:
+                bob = input("Skin to sync, for example '1' to sync the skin with ID 1. Press enter to go back to search mode\n")
+                if (bob == ""):
+                    break
+                try:
+                    download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
+                except:
+                    print("Error! input out of bounds")
+    elif (bob.lower() == "historical"):
+        historical_skins = not historical_skins
+        print("Historical only mode is", historical_skins)
+    elif (bob.lower() == "filter"):
+        print("Filter mode")
+        while True:
+            bob = input("Filter term, for example 'Spitfire'. Press enter to exit search mode and return to normal operation.\nSearch: ")
+            if (bob == ""):
                 break
-            try:
-                download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
-            except:
-                print("Error! input out of bounds")
-    else:    
-        try:
-            download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
-        except:
-            print("Error! input out of bounds")
+            print_results("none", bob)
+            while True:
+                bob = input("Skin to sync, for example '1' to sync the skin with ID 1. Press enter to go back to search mode\n")
+                if (bob == ""):
+                    break
+                try:
+                    download("C:/Users/lukaa/Documents/IL-2/", parse[bob]["host"], parse[bob]["localpath"], parse[bob]["filename"])
+                except:
+                    print("Error! input out of bounds")
